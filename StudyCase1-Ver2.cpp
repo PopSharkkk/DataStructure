@@ -51,8 +51,16 @@ Tree struktur;        // Tree untuk Organisasi
 bool loggedIn = false;
 Mahasiswa currentMahasiswa;
 
+// ===== UTILITY FUNCTIONS =====
+
+// Helper Function: Clear input buffer
+void clearInputBuffer()
+{
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
 // Helper Function: Print detail konsultasi
-void printKonsultasi(Konsultasi konsul)
+void printKonsultasi(const Konsultasi &konsul)
 {
     cout << endl;
     cout << "ID Antrian : " << konsul.id << endl;
@@ -63,7 +71,7 @@ void printKonsultasi(Konsultasi konsul)
     cout << "-----------------------------" << endl;
 }
 
-// --- FUNGSI TREE (STRUKTUR ORGANISASI) ---
+// ===== FUNGSI TREE (STRUKTUR ORGANISASI) =====
 
 bool nodeExists(Tree &tree, const string &nama)
 {
@@ -82,7 +90,7 @@ void tambahJabatan(Tree &tree)
 {
     string parent, jabatanBaru;
     cout << "Masukkan nama atasan (parent): ";
-    cin.ignore();
+    clearInputBuffer();
     getline(cin, parent);
 
     // Cek apakah parent ada
@@ -115,7 +123,7 @@ void hapusJabatan(Tree &tree)
 {
     string nama;
     cout << "Masukkan nama jabatan yang akan dihapus: ";
-    cin.ignore();
+    clearInputBuffer();
     getline(cin, nama);
 
     if (nama == tree.root)
@@ -184,7 +192,7 @@ void inisialisasiRoot(Tree &tree)
 {
     string jabatan;
     cout << "Struktur masih kosong. Masukkan jabatan tertinggi (Root): ";
-    cin.ignore();
+    clearInputBuffer();
     getline(cin, jabatan);
 
     tree.root = jabatan;
@@ -204,10 +212,10 @@ void tampilkanStruktur(Tree &tree)
     cout << "===========================\n\n";
 }
 
-// --- MOCK DATA (BAGIAN YANG DIMODIFIKASI) ---
+// ===== MOCK DATA =====
 void mockdata()
 {
-    // Data Mahasiswa Baru (Anti-Plagiat)
+    // Data Mahasiswa
     daftarMhs["rinaltra"] = {
         .nama = "Rinaltra Nabasa S",
         .nim = "5025251024",
@@ -240,7 +248,7 @@ void mockdata()
     adj["Lab_Komputer"] = {{"Perpustakaan_Pusat", 5}, {"Kantin_Mahasiswa", 3}};
 }
 
-// --- FITUR RIWAYAT (LINKED LIST) ---
+// ===== FITUR RIWAYAT (LINKED LIST) =====
 void riwayatAktivitas()
 {
     int opsi = 0;
@@ -296,7 +304,7 @@ void riwayatAktivitas()
     }
 }
 
-// --- FITUR ANTRIAN (QUEUE) ---
+// ===== FITUR ANTRIAN (QUEUE) =====
 void antrianKonsultasi()
 {
     cout << "===================================" << endl;
@@ -352,14 +360,15 @@ void antrianKonsultasi()
             Konsultasi konsul;
             konsul.id = konsultasi.size() + 1;
 
+            clearInputBuffer();
             cout << "Masukkan Nama Mahasiswa: ";
-            cin >> konsul.nama;
+            getline(cin, konsul.nama);
             cout << "Masukkan NIM: ";
-            cin >> konsul.nim;
+            getline(cin, konsul.nim);
             cout << "Masukkan Nama Dosen: ";
-            cin >> konsul.dosen;
+            getline(cin, konsul.dosen);
             cout << "Masukkan Waktu (contoh: 10:00): ";
-            cin >> konsul.waktu;
+            getline(cin, konsul.waktu);
 
             konsultasi.push(konsul);
             history.push_back("Ambil Antrian: " + konsul.nama + " (" + konsul.nim + ")");
@@ -374,7 +383,7 @@ void antrianKonsultasi()
     }
 }
 
-// --- FITUR STRUKTUR ORGANISASI (TREE) ---
+// ===== FITUR STRUKTUR ORGANISASI (TREE) =====
 void strukturOrganisasi()
 {
     cout << "===================================" << endl;
@@ -392,6 +401,7 @@ void strukturOrganisasi()
              << endl;
         cout << "Pilih Opsi: ";
         cin >> opsi;
+        cout << endl;
 
         if (opsi == 4)
             return;
@@ -411,7 +421,7 @@ void strukturOrganisasi()
     }
 }
 
-// --- FITUR NAVIGASI (GRAPH + DIJKSTRA) ---
+// ===== FITUR NAVIGASI (GRAPH + DIJKSTRA) =====
 void navigasiKampus()
 {
     cout << "===================================" << endl;
@@ -451,8 +461,9 @@ void navigasiKampus()
         else if (opsi == 3)
         {
             string newVertex;
+            clearInputBuffer();
             cout << "Masukkan nama lokasi baru: ";
-            cin >> newVertex;
+            getline(cin, newVertex);
             if (adj.find(newVertex) == adj.end())
             {
                 adj[newVertex] = vector<pair<string, int>>();
@@ -468,10 +479,11 @@ void navigasiKampus()
         {
             string asal, tujuan;
             int bobot;
+            clearInputBuffer();
             cout << "Lokasi Asal: ";
-            cin >> asal;
+            getline(cin, asal);
             cout << "Lokasi Tujuan: ";
-            cin >> tujuan;
+            getline(cin, tujuan);
             cout << "Jarak (meter): ";
             cin >> bobot;
 
@@ -489,10 +501,11 @@ void navigasiKampus()
         else if (opsi == 1)
         {
             string asal, tujuan;
+            clearInputBuffer();
             cout << "Lokasi Awal (Contoh: Gerbang_Utama): ";
-            cin >> asal;
+            getline(cin, asal);
             cout << "Lokasi Tujuan: ";
-            cin >> tujuan;
+            getline(cin, tujuan);
 
             if (adj.find(asal) == adj.end() || adj.find(tujuan) == adj.end())
             {
@@ -533,7 +546,7 @@ void navigasiKampus()
                 }
             }
 
-            if (dist[tujuan] == 1e9)
+            if (dist[tujuan] == (int)1e9)
             {
                 cout << ">> Tidak ada rute yang menghubungkan kedua lokasi tersebut.\n\n";
             }
@@ -547,6 +560,8 @@ void navigasiKampus()
                 while (curr != asal)
                 {
                     path.push_back(curr);
+                    if (parent.find(curr) == parent.end())
+                        break;
                     curr = parent[curr];
                 }
                 path.push_back(asal);
@@ -571,7 +586,7 @@ void navigasiKampus()
     }
 }
 
-// --- FITUR KRS (STACK) ---
+// ===== FITUR KRS (STACK) =====
 void operasiKRS()
 {
     cout << "===================================" << endl;
@@ -585,13 +600,14 @@ void operasiKRS()
         cout << "1. Tambah Mata Kuliah" << endl;
         cout << "2. Undo (Hapus Terakhir)" << endl;
         cout << "3. Lihat Mata Kuliah Terakhir" << endl;
-        cout << "4. Kembali" << endl
+        cout << "4. Lihat Semua Mata Kuliah" << endl;
+        cout << "5. Kembali" << endl
              << endl;
         cout << "Pilih Opsi: ";
         cin >> opsi;
         cout << endl;
 
-        if (opsi == 4)
+        if (opsi == 5)
             return;
 
         else if (opsi == 3)
@@ -603,6 +619,25 @@ void operasiKRS()
             else
             {
                 cout << ">> KRS masih kosong!" << endl;
+            }
+        }
+        else if (opsi == 4)
+        {
+            if (KRS.empty())
+            {
+                cout << ">> KRS masih kosong!" << endl;
+            }
+            else
+            {
+                cout << ">> Daftar Mata Kuliah (dari yang terakhir ditambah):" << endl;
+                stack<string> temp = KRS;
+                int no = 1;
+                while (!temp.empty())
+                {
+                    cout << no << ". " << temp.top() << endl;
+                    temp.pop();
+                    no++;
+                }
             }
         }
         else if (opsi == 2)
@@ -622,8 +657,9 @@ void operasiKRS()
         else if (opsi == 1)
         {
             string pilihan;
+            clearInputBuffer();
             cout << "Masukkan Kode/Nama MK: ";
-            cin >> pilihan;
+            getline(cin, pilihan);
 
             KRS.push(pilihan);
             history.push_back("Tambah KRS: " + pilihan);
@@ -636,7 +672,7 @@ void operasiKRS()
     }
 }
 
-// --- FITUR LAYANAN PRIORITAS (PRIORITY QUEUE) ---
+// ===== FITUR LAYANAN PRIORITAS (PRIORITY QUEUE) =====
 void prioritasLayanan()
 {
     cout << "===================================" << endl;
@@ -664,6 +700,7 @@ void prioritasLayanan()
             if (!prio_layanan.empty())
             {
                 cout << ">> Prioritas Tertinggi Saat Ini: " << prio_layanan.top().second << endl;
+                cout << ">> Level Prioritas: " << prio_layanan.top().first << endl;
             }
             else
             {
@@ -687,10 +724,10 @@ void prioritasLayanan()
         else if (opsi == 1)
         {
             string nama, kategori;
+            clearInputBuffer();
             cout << "Nama Mahasiswa: ";
-            cin >> nama;
+            getline(cin, nama);
             cout << "Kategori (Beasiswa/Disabilitas/TingkatAkhir/Lainnya): ";
-            cin.ignore();
             getline(cin, kategori);
 
             int pr = 4; // Default rendah
@@ -712,7 +749,7 @@ void prioritasLayanan()
     }
 }
 
-// --- FITUR LOGIN & AKUN (HASH TABLE) ---
+// ===== FITUR LOGIN & AKUN (HASH TABLE) =====
 void cariAkun()
 {
     string query;
@@ -722,7 +759,8 @@ void cariAkun()
          << endl;
 
     cout << "Masukkan Username (ketik 'exit' untuk keluar): ";
-    while (cin >> query && query != "exit")
+    clearInputBuffer();
+    while (getline(cin, query) && query != "exit")
     {
         auto findUsername = daftarMhs.find(query);
         if (findUsername != daftarMhs.end())
@@ -786,18 +824,20 @@ void buatAkun()
 
     if (daftarMhs.find(username) != daftarMhs.end())
     {
-        cout << ">> Username sudah digunakan!" << endl;
+        cout << ">> Username sudah digunakan!" << endl
+             << endl;
         return;
     }
 
+    clearInputBuffer();
     cout << "Nama Lengkap: ";
-    cin >> newUser.nama;
+    getline(cin, newUser.nama);
     cout << "NIM: ";
-    cin >> newUser.nim;
+    getline(cin, newUser.nim);
     cout << "Program Studi: ";
-    cin >> newUser.prodi;
+    getline(cin, newUser.prodi);
     cout << "Password: ";
-    cin >> newUser.password;
+    getline(cin, newUser.password);
     cout << "Semester: ";
     cin >> newUser.semester;
 
@@ -807,7 +847,7 @@ void buatAkun()
     history.push_back("Registrasi: " + username);
 }
 
-// --- MAIN PROGRAM ---
+// ===== MAIN PROGRAM =====
 int main()
 {
     cout << endl
@@ -828,13 +868,15 @@ int main()
 
         int logOrReg;
         cin >> logOrReg;
+        cout << endl;
 
         if (logOrReg == 1)
             login();
         else if (logOrReg == 2)
             buatAkun();
         else
-            cout << ">> Opsi tidak valid!" << endl;
+            cout << ">> Opsi tidak valid!" << endl
+                 << endl;
     }
 
     // Loop Menu Utama
@@ -885,9 +927,9 @@ int main()
             cout << "Logout berhasil. Sampai jumpa!" << endl;
             return 0;
         default:
-            cout << ">> Layanan tidak ditemukan!" << endl;
+            cout << ">> Layanan tidak ditemukan!" << endl
+                 << endl;
         }
-        cout << endl;
     }
 
     return 0;
